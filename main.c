@@ -197,14 +197,163 @@ void addAccountsFromFile(List *L) {
     }
 }
 
-void deleteAccount(List *L){
-    printf(VERDE"\nConta %s eliminada exitosamente\n\n"RESET_COLOR, (*L)->cuentas.nickname);
+void deleteAccount(List *L) {
+    if (*L == NULL) {
+        printf(ROJO"\nNon hai contas para eliminar\n\n"RESET_COLOR);
+        return;
+    }
+
+    char identificador[20];
+    printf(AZUL"\nIntroduce o valor do campo polo cal desexas eliminar a conta: "RESET_COLOR);
+    scanf("%19s", identificador);
+
+    Pos q = *L;
+    Pos prev = NULL;
+
+    while (q != NULL && strcmp(q->cuentas.id_lol, identificador) != 0 &&
+           strcmp(q->cuentas.nickname, identificador) != 0 &&
+           strcmp(q->cuentas.password, identificador) != 0 &&
+           strcmp(q->cuentas.lvl, identificador) != 0 &&
+           strcmp(q->cuentas.elo, identificador) != 0) {
+        prev = q;
+        q = q->next;
+    }
+
+    if (q == NULL) {
+        printf(ROJO"\nNon se atopou a conta con campo %s\n\n"RESET_COLOR, identificador);
+        return;
+    }
+
+    if (prev == NULL) {
+        *L = q->next;
+    } else {
+        prev->next = q->next;
+    }
+
+    printf(VERDE"\nConta eliminada exitosamente:\n"
+           "Id do cliente: %s\n"
+           "Nome de invocador: %s\n"
+           "Contrasinal: %s\n"
+           "Nivel da conta: %s\n"
+           "Elo: %s\n\n"RESET_COLOR,
+           q->cuentas.id_lol,
+           q->cuentas.nickname,
+           q->cuentas.password,
+           q->cuentas.lvl,
+           q->cuentas.elo);
+    
+    free(q);
+
+    FILE *archivo = fopen("contrasinais.txt", "w");
+    if (archivo != NULL) {
+        Pos t = *L;
+        while (t != NULL) {
+            fprintf(archivo, "%s\t\t\t%s\t\t\t%s\t\t\t%s\t\t\t%s\n",
+                    t->cuentas.id_lol,
+                    t->cuentas.nickname,
+                    t->cuentas.password,
+                    t->cuentas.lvl,
+                    t->cuentas.elo);
+            t = t->next;
+        }
+        fclose(archivo);
+    } else {
+        printf(ROJO"Error ao abrir o arquivo para escritura.\n"RESET_COLOR);
+    }
 }
 
-void editAccount(List *L){
-    //Pos q;
-    printf(VERDE"\nConta %s modificada exitosamente\n\n"RESET_COLOR,(*L)->cuentas.nickname);
+void editAccount(List *L) {  
+
+    if (*L == NULL) {
+        printf(ROJO"\nNon hai contas para modificar\n\n"RESET_COLOR);
+        return;
+    }
+
+    int c;
+    int opcion;
+    char identificador[20];
+
+    printf(AZUL"\nIntroduce o valor do campo polo cal desexas modificar a conta: "RESET_COLOR);
+    scanf("%19s", &identificador);
+
+    Pos q = *L;
+    Pos prev = NULL;
+
+    while (q != NULL && strcmp(q->cuentas.id_lol, identificador) != 0 &&
+           strcmp(q->cuentas.nickname, identificador) != 0) {
+        prev = q;
+        q = q->next;
+    }
+
+    if (q == NULL) {
+        printf(ROJO"\nNon se atopou a conta con campo %s\n\n"RESET_COLOR, identificador);
+        return;
+    }
+
+
+    printf(AMARILLO"\nEscolle unha opcion:\n"
+           "1. Modificar Id do cliente\n"
+           "2. Modificar Nome de invocador\n"
+           "3. Modificar Contrasinal\n"
+           "4. Modificar Nivel da conta\n"
+           "5. Modificar Elo\n"
+           "Opcion: "RESET_COLOR);
+
+    scanf("%d", &opcion);
+
+    switch(opcion){
+        case 1:
+            printf(AMARILLO"\nId do cliente (%s): "RESET_COLOR, q->cuentas.id_lol);
+            scanf("%19s", q->cuentas.id_lol);
+            printf(AMARILLO"Id do cliente modificado correctamente a " RESET_COLOR "%s\n",q->cuentas.id_lol);
+            break;
+        case 2:
+            while ((c = getchar()) != '\n' && c != EOF);
+            printf(AMARILLO"\nNome de invocador (%s): "RESET_COLOR, q->cuentas.nickname);
+            fgets(q->cuentas.nickname, sizeof(q->cuentas.nickname), stdin);
+            q->cuentas.nickname[strcspn(q->cuentas.nickname, "\n")] = '\0';
+            printf(AMARILLO"Nome de invocador modificado correctamente a " RESET_COLOR "%s\n",q->cuentas.nickname);
+            break;
+        case 3:
+            printf(AMARILLO"\nContrasinal (%s): "RESET_COLOR, q->cuentas.password);
+            fgets(q->cuentas.password, sizeof(q->cuentas.password), stdin);
+            q->cuentas.password[strcspn(q->cuentas.password, "\n")] = '\0';
+            printf(AMARILLO"Contrasinal modificado correctamente a " RESET_COLOR "%s\n",q->cuentas.password);
+            break;
+        case 4:
+            printf(AMARILLO"\nNivel da conta (%s): "RESET_COLOR, q->cuentas.lvl);
+            scanf("%4s", q->cuentas.lvl);
+            printf(AMARILLO"Nivel da conta modificado correctamente a "RESET_COLOR "%s\n",q->cuentas.lvl);
+            break;
+        case 5:
+            printf(AMARILLO"\nElo (%s): "RESET_COLOR, q->cuentas.elo);
+            scanf("%9s", q->cuentas.elo);
+            printf(AMARILLO"Elo da conta modificado correctamente a "RESET_COLOR "%s\n",q->cuentas.elo);
+            break;
+        default:
+            printf(AMARILLO"\nOperacion cancelada"RESET_COLOR);
+            break;
+    }
+
+
+    FILE *archivo = fopen("contrasinais.txt", "w");
+    if (archivo != NULL) {
+        Pos t = *L;
+        while (t != NULL) {
+            fprintf(archivo, "%s\t\t\t%s\t\t\t%s\t\t\t%s\t\t\t%s\n",
+                    t->cuentas.id_lol,
+                    t->cuentas.nickname,
+                    t->cuentas.password,
+                    t->cuentas.lvl,
+                    t->cuentas.elo);
+            t = t->next;
+        }
+        fclose(archivo);
+    } else {
+        printf(ROJO"Error ao abrir o arquivo para escritura.\n"RESET_COLOR);
+    }
 }
+
 
 void listAccount(List *L) {
     Pos q;
