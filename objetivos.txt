@@ -1,0 +1,15 @@
+1. Que se cree el archivo en el directorio que quiera
+
+2. Que el archivo tenga el nombre que el usuario quiera
+
+✅ 3. Implementar eliminar cuenta 
+
+✅ 4. Implementar modificar cuenta
+
+5. Arreglar lo de la fiabilidad
+
+6. Añadir sistema de contraseñas
+
+7. Restringir acceso al fichero contraseñas que se crea automaticamente
+
+8. Mejorar interfaz
