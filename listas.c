@@ -316,10 +316,10 @@ void listAccount(List *L) {
 
     printf(MSJ_SISTEMA"\nEsta e a tua Listaxe de contas\n"
        DECORACION"------------------------------\n"
-       AZUL"Id cliente\t\t\tNome Invocador\t\t\tContrasinal\t\t\tNivel\t\t\tElo\n\n");
+       AZUL"Id cliente\t\tNome Invocador\t\tContrasinal\t\tNivel\t\tElo\n\n");
 
     for (q = *L; q != NULL; q = q->next) {
-        printf(INFO "%s\t\t\t%s\t\t\t%s\t\t\t%s\t\t\t%s\n\n\n" RST,
+        printf(INFO "%-20s\t%-20s\t%-20s\t%-10s\t%-10s\n\n" RST,
                q->cuentas.id_lol,
                q->cuentas.nickname,
                q->cuentas.password,
