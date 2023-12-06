@@ -164,11 +164,13 @@ void deleteAccount(List *L) {
     }
 
     printf(VERDE"\nConta eliminada exitosamente:\n"
+           DECORACION"------------------------------\n"
            MSJ_SISTEMA"Id do cliente: "INFO"%s\n"
            MSJ_SISTEMA"Nome de invocador: "INFO"%s\n"
            MSJ_SISTEMA"Contrasinal: "INFO"%s\n"
            MSJ_SISTEMA"Nivel da conta: "INFO"%s\n"
-           MSJ_SISTEMA"Elo: "INFO"%s\n\n"RST,
+           MSJ_SISTEMA"Elo: "INFO"%s\n"RST
+           DECORACION"------------------------------\n",
            q->cuentas.id_lol,
            q->cuentas.nickname,
            q->cuentas.password,
