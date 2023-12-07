@@ -1,4 +1,5 @@
 #include "listas.h"
+#include <dirent.h>
 
 void inicializarListaVacia(List *L){
     *L=NULL;
@@ -14,68 +15,55 @@ void createNode(Pos *q){
     }
 }
 
-int isDirectoryEmpty(const char *path) {
-    char searchPath[MAX_PATH];
-    WIN32_FIND_DATA findFileData;
+int directorioEstaVacio(const char *ruta) {
+    DIR *dir = opendir(ruta);
 
-    // Construir la ruta de búsqueda con un comodín "*"
-    snprintf(searchPath, sizeof(searchPath), "%s\\*", path);
-
-    HANDLE hFind = FindFirstFile(searchPath, &findFileData);
-
-    if (hFind == INVALID_HANDLE_VALUE) {
-        perror("Error buscando archivos");
-        return -1;  // Código de error
+    if (dir == NULL) {
+        perror("Error al abrir el directorio");
+        exit(EXIT_FAILURE);
     }
 
-    // Verificar si el directorio está vacío
-    int isEmpty = 1;
-    do {
-        // Excluir las entradas "." y ".."
-        if (strcmp(findFileData.cFileName, ".") != 0 && strcmp(findFileData.cFileName, "..") != 0) {
-            isEmpty = 0;  // El directorio no está vacío
-            break;
+    struct dirent *entrada;
+
+    // Contador para contar el número de entradas en el directorio
+    int contador = 0;
+
+    // Lee todas las entradas en el directorio
+    while ((entrada = readdir(dir)) != NULL) {
+        // Ignora las entradas "." y ".."
+        if (strcmp(entrada->d_name, ".") != 0 && strcmp(entrada->d_name, "..") != 0) {
+            contador++;
         }
-    } while (FindNextFile(hFind, &findFileData) != 0);
+    }
 
-    FindClose(hFind);
+    closedir(dir);
 
-    return isEmpty;
+    // Si el contador es 0, el directorio está vacío
+    return contador == 0;
 }
 
-char* getFileName(const char *path) {
-    char searchPath[MAX_PATH];
-    WIN32_FIND_DATA findFileData;
+void obtenerArchivosEnDirectorio(const char *ruta,char nuevoNombre[]) {
+    DIR *dir = opendir(ruta);
 
-    // Construir la ruta de búsqueda con un comodín "*"
-    snprintf(searchPath, sizeof(searchPath), "%s\\*", path);
-
-    HANDLE hFind = FindFirstFile(searchPath, &findFileData);
-
-    if (hFind == INVALID_HANDLE_VALUE) {
-        perror("Error buscando archivos");
-        return NULL;  // Manejo de error: devuelve NULL
+    if (dir == NULL) {
+        perror("Error al abrir el directorio");
+        exit(EXIT_FAILURE);
     }
 
-    // Iterar para encontrar el tercer archivo
-    for (int i = 0; i < 3; ++i) {
-        if (FindNextFile(hFind, &findFileData) == 0) {
-            perror("Error al buscar el tercer archivo");
-            FindClose(hFind);
-            return NULL;  // Manejo de error: devuelve NULL
+    //printf("Archivos en el directorio '%s':\n", ruta);
+
+    struct dirent *entrada;
+    
+    // Lee todas las entradas en el directorio
+    while ((entrada = readdir(dir)) != NULL) {
+        // Ignora las entradas "." y ".."
+        if (strcmp(entrada->d_name, ".") != 0 && strcmp(entrada->d_name, "..") != 0) {
+            //printf("%s\n", entrada->d_name);
+            strcpy(nuevoNombre,entrada->d_name);
         }
     }
 
-    // Almacena el nombre del tercer archivo
-    char *fileName = _strdup(findFileData.cFileName);
-    if (fileName == NULL) {
-        perror("Error al duplicar el nombre del tercer archivo");
-        FindClose(hFind);
-        return NULL;  // Manejo de error: devuelve NULL
-    }
-
-    FindClose(hFind);
-    return fileName;
+    closedir(dir);
 }
 
 void addAccount(List *L,char nuevoNombre[]){
@@ -88,27 +76,25 @@ void addAccount(List *L,char nuevoNombre[]){
     char auxElo[MAX_ELO+1];
 
     char ruta[256];
+    
     char* docuPath = getenv("USERPROFILE");
 
     if (docuPath == NULL) {
-        printf("Non se puido obter a ruta de Documentos\n");
+        printf("Non se puido obter a ruta de Usuario\n");
         return;
     }
 
-    //sprintf(ruta, "%s\\Documents", docuPath); // C:\Users\lucas\Documents
+    sprintf(ruta, "%s\\Database", docuPath); // C:\Users\lucas\Database
 
-    /*if(isDirectoryEmpty(ruta)){
+    if(directorioEstaVacio(ruta)){
         printf(PETICION"\nIntroduce un nombre para el archivo: "RST);
         scanf("%255s", nuevoNombre); 
         while(getchar() != '\n');
     }else{
-        nuevoNombre = getFileName(ruta);
-        printf("\n%s\n",nuevoNombre);
-    }*/
+        obtenerArchivosEnDirectorio(ruta,nuevoNombre);
+    }
 
-    //sprintf(ruta, "%s\\%s.txt", ruta, nuevoNombre);
-
-    sprintf(ruta, "%s\\Documents\\contrasinais.txt", docuPath);
+    sprintf(ruta, "%s\\Database\\%s", docuPath,nuevoNombre);
 
     createNode(&q);
 
@@ -199,43 +185,44 @@ void addAccountsFromFile(List *L,char nuevoNombre[]) {
         return;
     }
 
-    /*sprintf(ruta, "%s\\Documents", docuPath);
+    sprintf(ruta, "%s\\Database", docuPath); // C:\Users\lucas\Database
 
-    printf("\n%s\n",ruta);
+    if(!directorioEstaVacio(ruta)){ // El directorio no esta vacio
+        obtenerArchivosEnDirectorio(ruta,nuevoNombre);
 
-    if(!isDirectoryEmpty(ruta)){
-        nuevoNombre = getFileName(ruta);
-        sprintf(ruta, "%s\\Documents\\%s.txt",docuPath,nuevoNombre);
-    }*/
+        printf("\nEste es el nombre: %s\n",nuevoNombre);
 
-    sprintf(ruta, "%s\\Documents\\contrasinais.txt",docuPath);
+        sprintf(ruta, "%s\\Database\\%s",docuPath,nuevoNombre);
 
-    FILE *archivo = fopen(ruta, "r");
-    if (archivo != NULL) {
-        while (1) {
-            Pos q;
-            createNode(&q);
-            if (fscanf(archivo, "%s %s %s %s %s",
-                       q->cuentas.id_lol,
-                       q->cuentas.nickname,
-                       q->cuentas.password,
-                       q->cuentas.lvl,
-                       q->cuentas.elo) != 5) {
+        FILE *archivo = fopen(ruta, "r");
+        if (archivo != NULL) {
+            while (1) {
+                Pos q;
+                createNode(&q);
+                if (fscanf(archivo, "%s %s %s %s %s",
+                    q->cuentas.id_lol,
+                    q->cuentas.nickname,
+                    q->cuentas.password,
+                    q->cuentas.lvl,
+                    q->cuentas.elo) != 5) {
                 free(q);
                 break;
-            }
-            if (*L == NULL) {
-                *L = q;
-            } else {
-                Pos t = *L;
-                while (t->next != NULL) {
-                    t = t->next;
                 }
-                t->next = q;
+                if (*L == NULL) {
+                   *L = q;
+                } else {
+                    Pos t = *L;
+                    while (t->next != NULL) {
+                        t = t->next;
+                    }
+                    t->next = q;
+                }
             }
+            fclose(archivo);
         }
-        fclose(archivo);
     }
+
+    
 }
 
 void deleteAccount(List *L) {
