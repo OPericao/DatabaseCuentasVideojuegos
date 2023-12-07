@@ -7,6 +7,7 @@ int main() {
     bool seguir = true;
     int opcion;
     char nuevoNombre[256];
+    
 
     addAccountsFromFile(&L, nuevoNombre);
 

@@ -7,6 +7,10 @@
 #include <ctype.h>
 #include <limits.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <dirent.h>
 #include <windows.h>
 
 #include "colores.c"

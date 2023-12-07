@@ -1,5 +1,4 @@
 #include "listas.h"
-#include <dirent.h>
 
 void inicializarListaVacia(List *L){
     *L=NULL;
@@ -13,6 +12,46 @@ void createNode(Pos *q){
     } else {
         printf(ERROR"Erro: Memoria chea\n"RST);
     }
+}
+
+int crearDirectorio(const char *directorioPadre, const char *nombreDirectorio) {
+    // Concatenamos la ruta completa
+    char rutaCompleta[MAX_PATH];
+    snprintf(rutaCompleta, sizeof(rutaCompleta), "%s\\%s", directorioPadre, nombreDirectorio);
+
+    if (CreateDirectory(rutaCompleta, NULL) != 0) {
+        printf(COMPLETADO"\nDirectorio creado exitosamente: "INFO"%s\n"RST, rutaCompleta);
+        return 1; // Creado exitosamente
+    } else{
+        return 0; // Fallo al crearlo
+    }
+    // CODIGO POR SI SE QUIERE QUE EL USUARIO LE PUEDA DAR NOMBRE A SU DIRECTORIO
+
+    /*else {
+        DWORD error = GetLastError();
+        if (error == ERROR_ALREADY_EXISTS) {
+            printf(ERROR"\nEl directorio ya existe: "INFO"%s\n"RST, rutaCompleta);
+        } else {
+            perror(ERROR"\nError al crear el directorio\n"RST);
+        }
+    }*/
+}
+
+int carpetaExiste(const char* directorio, const char* carpetaNombre) {
+    DIR* dir = opendir(directorio);
+
+    if (dir) {
+        struct dirent* entrada;
+        while ((entrada = readdir(dir)) != NULL) {
+            if (entrada->d_type == DT_DIR && strcmp(entrada->d_name, carpetaNombre) == 0) {
+                closedir(dir);
+                return 1; // Carpeta encontrada
+            }
+        }
+        closedir(dir);
+    }
+
+    return 0; // Carpeta no encontrada
 }
 
 int directorioEstaVacio(const char *ruta) {
@@ -185,12 +224,15 @@ void addAccountsFromFile(List *L,char nuevoNombre[]) {
         return;
     }
 
-    sprintf(ruta, "%s\\Database", docuPath); // C:\Users\lucas\Database
+    sprintf(ruta,docuPath); 
+
+    crearDirectorio(ruta,"Database");
+
+    sprintf(ruta,"%s\\Database",ruta); 
+
 
     if(!directorioEstaVacio(ruta)){ // El directorio no esta vacio
         obtenerArchivosEnDirectorio(ruta,nuevoNombre);
-
-        printf("\nEste es el nombre: %s\n",nuevoNombre);
 
         sprintf(ruta, "%s\\Database\\%s",docuPath,nuevoNombre);
 
