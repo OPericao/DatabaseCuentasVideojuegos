@@ -14,7 +14,71 @@ void createNode(Pos *q){
     }
 }
 
-void addAccount(List *L){
+int isDirectoryEmpty(const char *path) {
+    char searchPath[MAX_PATH];
+    WIN32_FIND_DATA findFileData;
+
+    // Construir la ruta de búsqueda con un comodín "*"
+    snprintf(searchPath, sizeof(searchPath), "%s\\*", path);
+
+    HANDLE hFind = FindFirstFile(searchPath, &findFileData);
+
+    if (hFind == INVALID_HANDLE_VALUE) {
+        perror("Error buscando archivos");
+        return -1;  // Código de error
+    }
+
+    // Verificar si el directorio está vacío
+    int isEmpty = 1;
+    do {
+        // Excluir las entradas "." y ".."
+        if (strcmp(findFileData.cFileName, ".") != 0 && strcmp(findFileData.cFileName, "..") != 0) {
+            isEmpty = 0;  // El directorio no está vacío
+            break;
+        }
+    } while (FindNextFile(hFind, &findFileData) != 0);
+
+    FindClose(hFind);
+
+    return isEmpty;
+}
+
+char* getFileName(const char *path) {
+    char searchPath[MAX_PATH];
+    WIN32_FIND_DATA findFileData;
+
+    // Construir la ruta de búsqueda con un comodín "*"
+    snprintf(searchPath, sizeof(searchPath), "%s\\*", path);
+
+    HANDLE hFind = FindFirstFile(searchPath, &findFileData);
+
+    if (hFind == INVALID_HANDLE_VALUE) {
+        perror("Error buscando archivos");
+        return NULL;  // Manejo de error: devuelve NULL
+    }
+
+    // Iterar para encontrar el tercer archivo
+    for (int i = 0; i < 3; ++i) {
+        if (FindNextFile(hFind, &findFileData) == 0) {
+            perror("Error al buscar el tercer archivo");
+            FindClose(hFind);
+            return NULL;  // Manejo de error: devuelve NULL
+        }
+    }
+
+    // Almacena el nombre del tercer archivo
+    char *fileName = _strdup(findFileData.cFileName);
+    if (fileName == NULL) {
+        perror("Error al duplicar el nombre del tercer archivo");
+        FindClose(hFind);
+        return NULL;  // Manejo de error: devuelve NULL
+    }
+
+    FindClose(hFind);
+    return fileName;
+}
+
+void addAccount(List *L,char nuevoNombre[]){
     Pos q;
     
     int c;
@@ -22,6 +86,29 @@ void addAccount(List *L){
     char aux[MAX_ID+1];
     char auxLvl[MAX_LVL+1];
     char auxElo[MAX_ELO+1];
+
+    char ruta[256];
+    char* docuPath = getenv("USERPROFILE");
+
+    if (docuPath == NULL) {
+        printf("Non se puido obter a ruta de Documentos\n");
+        return;
+    }
+
+    //sprintf(ruta, "%s\\Documents", docuPath); // C:\Users\lucas\Documents
+
+    /*if(isDirectoryEmpty(ruta)){
+        printf(PETICION"\nIntroduce un nombre para el archivo: "RST);
+        scanf("%255s", nuevoNombre); 
+        while(getchar() != '\n');
+    }else{
+        nuevoNombre = getFileName(ruta);
+        printf("\n%s\n",nuevoNombre);
+    }*/
+
+    //sprintf(ruta, "%s\\%s.txt", ruta, nuevoNombre);
+
+    sprintf(ruta, "%s\\Documents\\contrasinais.txt", docuPath);
 
     createNode(&q);
 
@@ -63,14 +150,15 @@ void addAccount(List *L){
     while ((c = getchar()) != '\n' && c != EOF);
 
 
-    printf(VERDE"\n\nConta engadida exitosamente\n"
-            DECORACION"------------------------------\n"
+    printf(VERDE"\n\nConta engadida exitosamente en %s\n"
+            DECORACION"------------------------------------------------------------------------\n"
             MSJ_SISTEMA"Id do cliente: " INFO "%s\n"
             MSJ_SISTEMA"Nome de invocador: " INFO "%s\n"
             MSJ_SISTEMA"Contrasinal: " INFO "%s\n"
             MSJ_SISTEMA"Nivel da conta: " INFO "%s\n"
             MSJ_SISTEMA"Elo: " INFO "%s\n"
-            DECORACION"------------------------------\n\n"RST,
+            DECORACION"------------------------------------------------------------------------\n\n"RST,
+            ruta,
             q->cuentas.id_lol,
             q->cuentas.nickname,
             q->cuentas.password,
@@ -87,7 +175,7 @@ void addAccount(List *L){
         t->next = q;
     }
 
-    FILE *archivo = fopen("contrasinais.txt", "a");
+    FILE *archivo = fopen(ruta, "a");
     if (archivo != NULL) {
         fprintf(archivo, "%s\t\t\t%s\t\t\t%s\t\t\t%s\t\t\t%s\n",
                 q->cuentas.id_lol,
@@ -101,8 +189,28 @@ void addAccount(List *L){
     }
 }
 
-void addAccountsFromFile(List *L) {
-    FILE *archivo = fopen("contrasinais.txt", "r");
+void addAccountsFromFile(List *L,char nuevoNombre[]) {
+
+    char ruta[256];
+    char* docuPath = getenv("USERPROFILE");
+
+    if (docuPath == NULL) {
+        printf("Non se puido obter a ruta do escritorio.\n");
+        return;
+    }
+
+    /*sprintf(ruta, "%s\\Documents", docuPath);
+
+    printf("\n%s\n",ruta);
+
+    if(!isDirectoryEmpty(ruta)){
+        nuevoNombre = getFileName(ruta);
+        sprintf(ruta, "%s\\Documents\\%s.txt",docuPath,nuevoNombre);
+    }*/
+
+    sprintf(ruta, "%s\\Documents\\contrasinais.txt",docuPath);
+
+    FILE *archivo = fopen(ruta, "r");
     if (archivo != NULL) {
         while (1) {
             Pos q;

@@ -4,6 +4,7 @@
         "malloc.h": "c",
         "limits.h": "c",
         "stdio.h": "c",
-        "libreriasyconstantes.c": "cpp"
+        "libreriasyconstantes.c": "cpp",
+        "listas.h": "c"
     }
 }

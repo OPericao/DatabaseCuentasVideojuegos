@@ -7,6 +7,8 @@
 #include <ctype.h>
 #include <limits.h>
 
+#include <windows.h>
+
 #include "colores.c"
 
 #define MAX_ID      20

@@ -6,8 +6,9 @@ int main() {
     List *L = NULL;
     bool seguir = true;
     int opcion;
+    char nuevoNombre[256];
 
-    addAccountsFromFile(&L);
+    addAccountsFromFile(&L, nuevoNombre);
 
     do {
         printf(MSJ_SISTEMA"\nEscolle unha opcion:\n"
@@ -25,7 +26,7 @@ int main() {
 
         switch (opcion) {
             case 1:
-                addAccount(&L);
+                addAccount(&L,nuevoNombre);
                 break;
             case 2:
                 deleteAccount(&L);
@@ -40,7 +41,6 @@ int main() {
                 manual();
                 break;
             case 6:
-                seguir = false;
                 printf("\nSaindo da aplicacion, ata pronto :)");
                 Pos t,q=*L;
                 while(q!=NULL){
@@ -49,6 +49,8 @@ int main() {
                     q=t;
                 }
                 L=NULL;
+                seguir = false;
+                break;
             default:
                 printf(ERROR"\nError ao escoller a opcion, volva executar\n"RST);
                 break;
@@ -73,9 +75,7 @@ void manual(){
                DECORACION"======================================\n"
                PETICION"Opcion: "RST);
 
-        scanf("%d", &opcion);
-
-        
+        scanf("%d", &opcion);        
 
         switch (opcion) {
             case 1:
@@ -100,6 +100,7 @@ void manual(){
             case 5:
                 seguir = false;
                 printf("\nSaindo do manual\n");
+                break;
             default:
                 printf(ERROR"\nError ao escoller a opcion, volva executar\n"RST);
                 break;

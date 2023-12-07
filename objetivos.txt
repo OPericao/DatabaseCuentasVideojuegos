@@ -1,6 +1,6 @@
-1. Que se cree el archivo en el directorio que quiera
+✅ 1. Que se cree el archivo en el directorio que quiera (de momento uso Documents)
 
-2. Que el archivo tenga el nombre que el usuario quiera
+✅ 2. Que el archivo tenga el nombre que el usuario quiera
 
 ✅ 3. Implementar eliminar cuenta 
 
