@@ -1,3 +1,4 @@
+/*
 #include "listas.c"
 
 void manual();
@@ -108,3 +109,4 @@ void manual(){
         }
     } while (seguir);
 }
+*/

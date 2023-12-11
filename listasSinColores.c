@@ -1,4 +1,3 @@
-/*
 #include "listas.h"
 
 void inicializarListaVacia(List *L){
@@ -11,7 +10,7 @@ void createNode(Pos *q){
     if (*q != NULL) {
         (*q)->next = NULL;
     } else {
-        printf(ERROR"Erro: Memoria chea\n"RST);
+        printf("Erro: Memoria chea\n");
     }
 }
 
@@ -21,7 +20,7 @@ int crearDirectorio(const char *directorioPadre, const char *nombreDirectorio) {
     snprintf(rutaCompleta, sizeof(rutaCompleta), "%s\\%s", directorioPadre, nombreDirectorio);
 
     if (CreateDirectory(rutaCompleta, NULL) != 0) {
-        printf(COMPLETADO"\nDirectorio creado exitosamente: "INFO"%s\n"RST, rutaCompleta);
+        printf("\nDirectorio creado exitosamente: ""%s\n", rutaCompleta);
         return 1; // Creado exitosamente
     } else{
         return 0; // Fallo al crearlo
@@ -30,12 +29,12 @@ int crearDirectorio(const char *directorioPadre, const char *nombreDirectorio) {
 
     /*else {
         DWORD error = GetLastError();
-        if (error == ERROR_ALREADY_EXISTS) {
-            printf(ERROR"\nEl directorio ya existe: "INFO"%s\n"RST, rutaCompleta);
+        if (error == _ALREADY_EXISTS) {
+            printf("\nEl directorio ya existe: ""%s\n", rutaCompleta);
         } else {
-            perror(ERROR"\nError al crear el directorio\n"RST);
+            perror("\nError al crear el directorio\n");
         }
-    }
+    }*/
 }
 
 int carpetaExiste(const char* directorio, const char* carpetaNombre) {
@@ -127,7 +126,7 @@ void addAccount(List *L,char nuevoNombre[]){
     sprintf(ruta, "%s\\Database", docuPath); // C:\Users\lucas\Database
 
     if(directorioEstaVacio(ruta)){
-        printf(PETICION"\nIntroduce un nombre para el archivo: "RST);
+        printf("\nIntroduce un nombre para el archivo: ");
         scanf("%255s", nuevoNombre); 
         while(getchar() != '\n');
     }else{
@@ -138,37 +137,37 @@ void addAccount(List *L,char nuevoNombre[]){
 
     createNode(&q);
 
-    printf(MSJ_SISTEMA"\nEnche os seguintes campos\n"RST);
+    printf("\nEnche os seguintes campos\n");
 
-    printf(PETICION"\nId do cliente: "RST);
+    printf("\nId do cliente: ");
     scanf("%20s", aux);
     strcpy(q->cuentas.id_lol, aux);
     memset(aux, 0, sizeof(aux));
 
     while ((c = getchar()) != '\n' && c != EOF);
 
-    printf(PETICION"\nNome de invocador: "RST);
+    printf("\nNome de invocador: ");
     scanf("%20s", aux);
     strcpy(q->cuentas.nickname, aux);
     memset(aux, 0, sizeof(aux));
 
     while ((c = getchar()) != '\n' && c != EOF);
 
-    printf(PETICION"\nContrasinal: "RST);
+    printf("\nContrasinal: ");
     scanf("%20s", aux);
     strcpy(q->cuentas.password, aux);
     memset(aux, 0, sizeof(aux));
 
     while ((c = getchar()) != '\n' && c != EOF);
 
-    printf(PETICION"\nNivel: "RST);
+    printf("\nNivel: ");
     scanf("%5s", auxLvl);
     strcpy(q->cuentas.lvl, auxLvl);
     memset(aux, 0, sizeof(auxLvl));
 
     while ((c = getchar()) != '\n' && c != EOF);
 
-    printf(PETICION"\nElo: "RST);
+    printf("\nElo: ");
     scanf("%10s", auxElo);
     strcpy(q->cuentas.elo, auxElo);
     memset(aux, 0, sizeof(auxElo));
@@ -176,14 +175,14 @@ void addAccount(List *L,char nuevoNombre[]){
     while ((c = getchar()) != '\n' && c != EOF);
 
 
-    printf(VERDE"\n\nConta engadida exitosamente en %s\n"
-            DECORACION"------------------------------------------------------------------------\n"
-            MSJ_SISTEMA"Id do cliente: " INFO "%s\n"
-            MSJ_SISTEMA"Nome de invocador: " INFO "%s\n"
-            MSJ_SISTEMA"Contrasinal: " INFO "%s\n"
-            MSJ_SISTEMA"Nivel da conta: " INFO "%s\n"
-            MSJ_SISTEMA"Elo: " INFO "%s\n"
-            DECORACION"------------------------------------------------------------------------\n\n"RST,
+    printf("\n\nConta engadida exitosamente en %s\n"
+            "------------------------------------------------------------------------\n"
+            "Id do cliente: "  "%s\n"
+            "Nome de invocador: "  "%s\n"
+            "Contrasinal: "  "%s\n"
+            "Nivel da conta: "  "%s\n"
+            "Elo: "  "%s\n"
+            "------------------------------------------------------------------------\n\n",
             ruta,
             q->cuentas.id_lol,
             q->cuentas.nickname,
@@ -211,7 +210,7 @@ void addAccount(List *L,char nuevoNombre[]){
                 q->cuentas.elo);
         fclose(archivo);
     } else {
-        printf(ERROR"Error ao abrir o arquivo para escritura.\n"RST);
+        printf("Error ao abrir o arquivo para escritura.\n");
     }
 }
 
@@ -268,14 +267,25 @@ void addAccountsFromFile(List *L,char nuevoNombre[]) {
     
 }
 
-void deleteAccount(List *L) {
+void deleteAccount(List *L,char nuevoNombre[]) {
     if (*L == NULL) {
-        printf(ERROR"\nNon hai contas para eliminar\n\n"RST);
+        printf("\nNon hai contas para eliminar\n\n");
         return;
     }
 
+    char ruta[256];
+    
+    char* docuPath = getenv("USERPROFILE");
+
+    if (docuPath == NULL) {
+        printf("Non se puido obter a ruta de Usuario\n");
+        return;
+    }
+
+    sprintf(ruta, "%s\\Database\\%s", docuPath,nuevoNombre);
+
     char identificador[MAX_ID+1];
-    printf(PETICION"\nIntroduce o valor do campo polo cal desexas eliminar a conta: "RST);
+    printf("\nIntroduce o valor do campo polo cal desexas eliminar a conta: ");
     scanf("%20s", identificador);
 
     Pos q = *L;
@@ -291,7 +301,7 @@ void deleteAccount(List *L) {
     }
 
     if (q == NULL) {
-        printf(ERROR"\nNon se atopou a conta con campo %s\n\n"RST, identificador);
+        printf("\nNon se atopou a conta con campo %s\n\n", identificador);
         return;
     }
 
@@ -301,14 +311,14 @@ void deleteAccount(List *L) {
         prev->next = q->next;
     }
 
-    printf(VERDE"\nConta eliminada exitosamente:\n"
-           DECORACION"------------------------------\n"
-           MSJ_SISTEMA"Id do cliente: "INFO"%s\n"
-           MSJ_SISTEMA"Nome de invocador: "INFO"%s\n"
-           MSJ_SISTEMA"Contrasinal: "INFO"%s\n"
-           MSJ_SISTEMA"Nivel da conta: "INFO"%s\n"
-           MSJ_SISTEMA"Elo: "INFO"%s\n"RST
-           DECORACION"------------------------------\n",
+    printf("\nConta eliminada exitosamente:\n"
+           "------------------------------\n"
+           "Id do cliente: ""%s\n"
+           "Nome de invocador: ""%s\n"
+           "Contrasinal: ""%s\n"
+           "Nivel da conta: ""%s\n"
+           "Elo: ""%s\n"
+           "------------------------------\n",
            q->cuentas.id_lol,
            q->cuentas.nickname,
            q->cuentas.password,
@@ -317,7 +327,7 @@ void deleteAccount(List *L) {
     
     free(q);
 
-    FILE *archivo = fopen("contrasinais.txt", "w");
+    FILE *archivo = fopen(ruta, "w");
     if (archivo != NULL) {
         Pos t = *L;
         while (t != NULL) {
@@ -331,14 +341,14 @@ void deleteAccount(List *L) {
         }
         fclose(archivo);
     } else {
-        printf(ERROR"Error ao abrir o arquivo para escritura.\n"RST);
+        printf("Error ao abrir o arquivo para escritura.\n");
     }
 }
 
-void editAccount(List *L) {  
+void editAccount(List *L,char nuevoNombre[]) {  
 
     if (*L == NULL) {
-        printf(ERROR"\nNon hai contas para modificar\n\n"RST);
+        printf("\nNon hai contas para modificar\n\n");
         return;
     }
 
@@ -352,7 +362,18 @@ void editAccount(List *L) {
     char auxLvl[MAX_LVL+1];
     char auxElo[MAX_ELO+1];
 
-    printf(PETICION"\nIntroduce o valor do campo polo cal desexas modificar a conta: "RST);
+    char ruta[256];
+    
+    char* docuPath = getenv("USERPROFILE");
+
+    if (docuPath == NULL) {
+        printf("Non se puido obter a ruta de Usuario\n");
+        return;
+    }
+
+    sprintf(ruta, "%s\\Database\\%s", docuPath,nuevoNombre);
+
+    printf("\nIntroduce o valor do campo polo cal desexas modificar a conta: ");
     scanf("%20s", identificador);
 
     Pos q = *L;
@@ -365,75 +386,75 @@ void editAccount(List *L) {
     }
 
     if (q == NULL) {
-        printf(ERROR"\nNon se atopou a conta con campo %s\n\n"RST, identificador);
+        printf("\nNon se atopou a conta con campo %s\n\n", identificador);
         return;
     }
 
     do{
-        printf(MSJ_SISTEMA"\nEscolle unha opcion:\n"
-            DECORACION"====================\n"
-            MENU"1. Modificar Id do cliente\n"
+        printf("\nEscolle unha opcion:\n"
+            "====================\n"
+            "1. Modificar Id do cliente\n"
             "2. Modificar Nome de invocador\n"
             "3. Modificar Contrasinal\n"
             "4. Modificar Nivel da conta\n"
             "5. Modificar Elo\n"
             "6. Cancelar Operacion\n"
-            DECORACION"====================\n"
-            PETICION"Opcion: "RST);
+            "====================\n"
+            "Opcion: ");
 
         scanf("%d", &opcion);
 
         switch(opcion){
             case 1:
-                printf(PETICION"\nId do cliente novo (antes %s): "RST, q->cuentas.id_lol);
+                printf("\nId do cliente novo (antes %s): ", q->cuentas.id_lol);
                scanf("%20s", aux);
                strcpy(q->cuentas.id_lol, aux);
                 memset(aux, 0, sizeof(aux));
 
                 while ((c = getchar()) != '\n' && c != EOF);
             
-                printf(MSJ_SISTEMA"\nId do cliente modificado correctamente a "INFO"%s\n",q->cuentas.id_lol);
+                printf("\nId do cliente modificado correctamente a ""%s\n",q->cuentas.id_lol);
                 break;
             case 2:
                 while ((c = getchar()) != '\n' && c != EOF);
-               printf(PETICION"\nNome de invocador novo (antes %s): "RST, q->cuentas.nickname);
+               printf("\nNome de invocador novo (antes %s): ", q->cuentas.nickname);
                 fgets(q->cuentas.nickname, sizeof(q->cuentas.nickname), stdin);
                 q->cuentas.nickname[strcspn(q->cuentas.nickname, "\n")] = '\0';
-                printf(MSJ_SISTEMA"\nNome de invocador modificado correctamente a "INFO"%s\n",q->cuentas.nickname);
+                printf("\nNome de invocador modificado correctamente a ""%s\n",q->cuentas.nickname);
                 break;
             case 3:
                 while ((c = getchar()) != '\n' && c != EOF);
-                printf(PETICION"\nContrasinal novo (antes %s): "RST, q->cuentas.password);
+                printf("\nContrasinal novo (antes %s): ", q->cuentas.password);
                 fgets(q->cuentas.password, sizeof(q->cuentas.password), stdin);
                 q->cuentas.password[strcspn(q->cuentas.password, "\n")] = '\0';
-                printf(MSJ_SISTEMA"\nContrasinal modificado correctamente a " INFO"%s\n",q->cuentas.password);
+                printf("\nContrasinal modificado correctamente a " "%s\n",q->cuentas.password);
                 break;
             case 4:
                 while ((c = getchar()) != '\n' && c != EOF);
-                printf(PETICION"\nNivel da conta novo (antes %s): "RST, q->cuentas.lvl);
+                printf("\nNivel da conta novo (antes %s): ", q->cuentas.lvl);
                 scanf("%5s", q->cuentas.lvl);
-                printf(MSJ_SISTEMA"\nNivel da conta modificado correctamente a "INFO"%s\n",q->cuentas.lvl);
+                printf("\nNivel da conta modificado correctamente a ""%s\n",q->cuentas.lvl);
                 break;
             case 5:
                 while ((c = getchar()) != '\n' && c != EOF);
-                printf(PETICION"\nElo novo (antes %s): "RST, q->cuentas.elo);
+                printf("\nElo novo (antes %s): ", q->cuentas.elo);
                 scanf("%10s", q->cuentas.elo);
-                printf(MSJ_SISTEMA"\nElo da conta modificado correctamente a "INFO"%s\n",q->cuentas.elo);
+                printf("\nElo da conta modificado correctamente a ""%s\n",q->cuentas.elo);
                 break;
             case 6:
-                printf(MSJ_SISTEMA"\nOperacion cancelada\n"RST);
+                printf("\nOperacion cancelada\n");
                 
                 seguir=false;
                 break;
             default:
-                printf(ERROR"\nOpcion non valida, introduza algun dos numeros no menu\n"RST);
+                printf("\nOpcion non valida, introduza algun dos numeros no menu\n");
 
                 break;
         }
     }while(seguir);
 
 
-    FILE *archivo = fopen("contrasinais.txt", "w");
+    FILE *archivo = fopen(ruta, "w");
     if (archivo != NULL) {
         Pos t = *L;
         while (t != NULL) {
@@ -447,19 +468,19 @@ void editAccount(List *L) {
         }
         fclose(archivo);
     } else {
-        printf(ERROR"Error ao abrir o arquivo para escritura.\n"RST);
+        printf("Error ao abrir o arquivo para escritura.\n");
     }
 }
 
 void listAccount(List *L) {
     Pos q;
 
-    printf(MSJ_SISTEMA"\nEsta e a tua Listaxe de contas\n"
-       DECORACION"------------------------------\n"
-       AZUL"Id cliente\t\tNome Invocador\t\tContrasinal\t\tNivel\t\tElo\n\n");
+    printf("\nEsta e a tua Listaxe de contas\n"
+       "------------------------------\n"
+       "Id cliente\t\tNome Invocador\t\tContrasinal\t\tNivel\t\tElo\n\n");
 
     for (q = *L; q != NULL; q = q->next) {
-        printf(INFO "%-20s\t%-20s\t%-20s\t%-10s\t%-10s\n\n" RST,
+        printf( "%-20s\t%-20s\t%-20s\t%-10s\t%-10s\n\n" ,
                q->cuentas.id_lol,
                q->cuentas.nickname,
                q->cuentas.password,
@@ -467,4 +488,3 @@ void listAccount(List *L) {
                q->cuentas.elo);
     }
 }
-*/
