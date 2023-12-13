@@ -106,9 +106,9 @@ void obtenerArchivosEnDirectorio(const char *ruta,char nuevoNombre[]) {
 }
 
 void addAccount(List *L,char nuevoNombre[]){
-    Pos q;
-    
-    int c;
+    Pos q;    
+
+    int c, division,eloNum;
 
     char aux[MAX_ID+1];
     char auxLvl[MAX_LVL+1];
@@ -116,6 +116,8 @@ void addAccount(List *L,char nuevoNombre[]){
 
     char ruta[256];
     
+    char* elos[11] = {"Hierro ","Bronce ","Plata ","Oro ","Platino ","Esmeralda ","Diamante ","Master","Gran Master","Challenger"};
+
     char* docuPath = getenv("USERPROFILE");
 
     if (docuPath == NULL) {
@@ -167,8 +169,39 @@ void addAccount(List *L,char nuevoNombre[]){
 
     while ((c = getchar()) != '\n' && c != EOF);
 
-    printf("\nElo: ");
-    scanf("%10s", auxElo);
+    do{
+        printf("\n1.Hierro\n"
+                "2.Bronce\n"
+                "3.Plata\n"
+                "4.Oro\n"
+                "5.Platino\n"
+                "6.Esmeralda\n"
+                "7.Diamante\n"
+                "8.Master\n"
+                "9.Gran Master\n"
+                "10.Challenger\n"
+               "\nElo: ");
+     
+        scanf("%d",&eloNum);
+    }while(eloNum<1 || eloNum > 10);
+
+    eloNum = eloNum-1;
+
+    printf("\n%s\n",elos[eloNum]);
+
+    strcpy(auxElo,elos[eloNum]);    
+
+    if(eloNum<7){
+        do{
+            printf("\nDivision (1-4): ");
+            scanf("%d",&division);
+        }while(division < 1 || division > 4);
+        
+        int divAux[2];
+        sprintf(divAux,"%d",division);
+        strcat(auxElo,divAux);
+    }
+
     strcpy(q->cuentas.elo, auxElo);
     memset(aux, 0, sizeof(auxElo));
 
@@ -352,8 +385,7 @@ void editAccount(List *L,char nuevoNombre[]) {
         return;
     }
 
-    int c;
-    int opcion;
+    int c, division,eloNum, opcion;
 
     bool seguir=true;
 
@@ -364,6 +396,8 @@ void editAccount(List *L,char nuevoNombre[]) {
 
     char ruta[256];
     
+    char* elos[11] = {"Hierro ","Bronce ","Plata ","Oro ","Platino ","Esmeralda ","Diamante ","Master","Gran Master","Challenger"};
+
     char* docuPath = getenv("USERPROFILE");
 
     if (docuPath == NULL) {
@@ -437,8 +471,40 @@ void editAccount(List *L,char nuevoNombre[]) {
                 break;
             case 5:
                 while ((c = getchar()) != '\n' && c != EOF);
-                printf("\nElo novo (antes %s): ", q->cuentas.elo);
-                scanf("%10s", q->cuentas.elo);
+                do{
+                    printf("\n1.Hierro\n"
+                            "2.Bronce\n"
+                            "3.Plata\n"
+                            "4.Oro\n"
+                            "5.Platino\n"
+                            "6.Esmeralda\n"
+                            "7.Diamante\n"
+                            "8.Master\n"
+                            "9.Gran Master\n"
+                            "10.Challenger\n"
+                            "\nElo novo (antes %s): ", q->cuentas.elo);
+     
+                    scanf("%d",&eloNum);
+                }while(eloNum<1 || eloNum > 10);
+
+                eloNum = eloNum - 1;
+
+                strcpy(auxElo,elos[eloNum]);
+
+                if(eloNum<7){
+                    do{
+                        printf("\nDivision (1-4): ");
+                        scanf("%d",&division);
+                    }while(division < 1 || division > 4);
+        
+                    int divAux[2];
+                    sprintf(divAux,"%d",division);
+                    strcat(auxElo,divAux);
+                }                
+
+                strcpy(q->cuentas.elo, auxElo);
+                memset(aux, 0, sizeof(auxElo));
+        
                 printf("\nElo da conta modificado correctamente a ""%s\n",q->cuentas.elo);
                 break;
             case 6:
